@@ -1,0 +1,15 @@
+{
+  "updated": "2026-04-13T09:00:00",
+  "email": {
+    "received_today": 24,
+    "open_count": 6,
+    "resolved_today": 18,
+    "as_of": "09:00"
+  },
+  "sales": {
+    "actual": 87500,
+    "target": 150000,
+    "period": "April 2026"
+  },
+  "message": "Great start to the week — keep it up!"
+}
