@@ -1,15 +1,15 @@
 {
-  "updated": "2026-04-13T09:00:00",
+  "updated": "2026-04-14T08:13:05",
   "email": {
-    "received_today": 24,
-    "open_count": 6,
-    "resolved_today": 18,
-    "as_of": "09:00"
+    "unassigned": 6,
+    "categorized": 17,
+    "overdue": 0,
+    "new_purchase_orders": 1
   },
   "sales": {
-    "actual": 87500,
-    "target": 150000,
-    "period": "April 2026"
+    "actual": 0,
+    "target": 0,
+    "period": "Current Period"
   },
-  "message": "Great start to the week — keep it up! (This is test data only)"
+  "message": "Dashboard live"
 }
