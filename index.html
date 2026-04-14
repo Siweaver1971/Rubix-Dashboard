@@ -443,16 +443,17 @@
       (document.querySelector('.card.accent-none .card-label').textContent = 'New Purchase Orders');
 
     // Sales
-    const actual = parseFloat(s.actual) || 0;
-    const target = parseFloat(s.target) || 0;
-    const pct    = target > 0 ? Math.min(Math.round((actual / target) * 100), 150) : 0;
+    const actual  = parseFloat(s.actual_gbp)  || 0;
+    const target  = parseFloat(s.target_gbp)  || 0;
+    const actPct  = parseFloat(s.actual_pct)  || 0;
+    const tgtPct  = parseFloat(s.target_pct)  || 100;
     document.getElementById('sales-period').textContent  = 'Branch Sales — ' + (s.period || 'Current Period');
     document.getElementById('sales-actual').textContent  = fmtGBP(actual);
     document.getElementById('sales-target').textContent  = fmtGBP(target);
-    document.getElementById('sales-pct').textContent     = pct + '%';
+    document.getElementById('sales-pct').textContent     = actPct + '%';
     const fill = document.getElementById('progress-fill');
-    setTimeout(function(){ fill.style.width = Math.min(pct, 100) + '%'; }, 100);
-    if(pct >= 100) fill.classList.add('over'); else fill.classList.remove('over');
+    setTimeout(function(){ fill.style.width = Math.min(actPct, 100) + '%'; }, 100);
+    if(actPct >= tgtPct) fill.classList.add('over'); else fill.classList.remove('over');
 
     // Message tile
     document.getElementById('kpi-message').textContent = d.message || '—';
