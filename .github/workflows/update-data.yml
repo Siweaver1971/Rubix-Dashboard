@@ -16,12 +16,12 @@ jobs:
       - name: Fetch data from OneDrive
         run: |
           curl -L \
-            -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
-            "https://groupiph-my.sharepoint.com/:u:/g/personal/simon_weaver_rubix-group_com/IQCQSbYWHlhWT6vs5f7tm4m4ARxWaPL2XFVOc7pg8CAssqA?e=mCKpqK&download=1" \
+            "https://groupiph-my.sharepoint.com/:u:/g/personal/simon_weaver_rubix-group_com/IQCQSbYWHlhWT6vs5f7tm4m4ARxWaPL2XFVOc7pg8CAssqA?e=mCKpqK&download=1&NoRedirect=1" \
             -o data.json \
             --fail \
             --silent \
             --show-error
+          python3 -c "import json; json.load(open('data.json'))" || { echo "ERROR: Fetched content is not valid JSON — aborting commit"; exit 1; }
 
       - name: Commit and push if changed
         run: |
