@@ -284,37 +284,37 @@
   <!-- KPI GRID -->
   <div class="kpi-grid">
 
-    <!-- Emails received today -->
+    <!-- Unassigned -->
     <div class="card accent-full">
       <div>
-        <div class="card-label">Emails Received Today</div>
+        <div class="card-label">Unassigned</div>
         <div class="card-value yellow" id="kpi-received">—</div>
       </div>
       <div class="card-sub" id="kpi-received-sub">Loading...</div>
     </div>
 
-    <!-- Open / unresolved -->
+    <!-- Catergorized -->
     <div class="card" id="card-open">
       <div>
-        <div class="card-label">Open / Unresolved</div>
+        <div class="card-label">Categorised</div>
         <div class="card-value" id="kpi-open">—</div>
       </div>
       <div class="card-sub" id="kpi-open-sub">Loading...</div>
     </div>
 
-    <!-- Resolved today -->
+    <!-- Overdue -->
     <div class="card">
       <div>
-        <div class="card-label">Resolved Today</div>
+        <div class="card-label">Overdue</div>
         <div class="card-value" id="kpi-resolved">—</div>
       </div>
       <div class="card-sub" id="kpi-resolved-sub">Loading...</div>
     </div>
 
-    <!-- Resolution rate -->
+    <!-- New Purchase Orders -->
     <div class="card accent-none">
       <div>
-        <div class="card-label">Resolution Rate</div>
+        <div class="card-label">New Purchase Orders</div>
         <div class="card-value" id="kpi-rate">—</div>
       </div>
       <div class="card-sub">of today's emails resolved</div>
@@ -415,32 +415,32 @@
       .catch(function(){ renderError(); });
     nextAt = Date.now() + REFRESH_MS;
   }
-
   function renderData(d){
     const e = d.email || {};
     const s = d.sales || {};
 
     // Email KPIs
-    document.getElementById('kpi-received').textContent  = e.received_today  ?? '—';
-    document.getElementById('kpi-open').textContent      = e.open_count       ?? '—';
-    document.getElementById('kpi-resolved').textContent  = e.resolved_today   ?? '—';
+    document.getElementById('kpi-received').textContent  = e.unassigned          ?? '—';
+    document.getElementById('kpi-open').textContent      = e.categorized         ?? '—';
+    document.getElementById('kpi-resolved').textContent  = e.overdue             ?? '—';
 
-    // Open card highlight if high
+    // Open card highlight
     const openCard = document.getElementById('card-open');
-    const openCount = parseInt(e.open_count) || 0;
+    const openCount = parseInt(e.unassigned) || 0;
     openCard.style.borderColor = openCount > 10 ? 'rgba(253,131,116,0.6)' : 'var(--card-bdr)';
 
     // Sub text
-    document.getElementById('kpi-received-sub').textContent = 'As of ' + (e.as_of || 'today');
+    document.getElementById('kpi-received-sub').textContent = 'Awaiting assignment';
     document.getElementById('kpi-open-sub').textContent     = openCount > 10 ? '⚠ Above threshold' : 'Within normal range';
-    document.getElementById('kpi-resolved-sub').textContent = 'Closed today';
+    document.getElementById('kpi-resolved-sub').textContent = (parseInt(e.overdue)||0) > 0 ? '⚠ Past SLA' : 'All within SLA';
 
-    // Resolution rate
-    const recv = parseInt(e.received_today) || 0;
-    const res  = parseInt(e.resolved_today) || 0;
-    const rate = recv > 0 ? Math.round((res / recv) * 100) : 0;
-    document.getElementById('kpi-rate').textContent = rate + '%';
-    document.getElementById('kpi-rate').style.color = rate >= 80 ? '#00C66A' : rate >= 50 ? 'var(--white)' : '#FD8374';
+    // PO count — reuse resolution rate tile
+    document.getElementById('kpi-rate').textContent = e.new_purchase_orders ?? '—';
+    document.getElementById('kpi-rate').style.color = 'var(--yellow)';
+
+    // Also update the resolution rate label
+    document.querySelector('.card.accent-none .card-label') && 
+      (document.querySelector('.card.accent-none .card-label').textContent = 'New Purchase Orders');
 
     // Sales
     const actual = parseFloat(s.actual) || 0;
