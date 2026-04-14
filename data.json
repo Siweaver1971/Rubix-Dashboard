@@ -7,9 +7,11 @@
     "new_purchase_orders": 1
   },
   "sales": {
-    "actual": 0,
-    "target": 0,
-    "period": "Current Period"
+  "actual_gbp": 87500,
+  "target_gbp": 150000,
+  "actual_pct": 58,
+  "target_pct": 100,
+  "period": "April 2026"
   },
   "message": "Dashboard live"
 }
