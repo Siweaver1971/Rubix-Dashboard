@@ -13,15 +13,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fetch data from OneDrive
+      - name: Fetch data from Google Drive
         run: |
-          curl -L \
-            "https://groupiph-my.sharepoint.com/:u:/g/personal/simon_weaver_rubix-group_com/IQCQSbYWHlhWT6vs5f7tm4m4ARxWaPL2XFVOc7pg8CAssqA?e=mCKpqK&download=1&NoRedirect=1" \
+          curl -L "https://drive.google.com/uc?export=download&id=1XF4p_2OrTKvNQEf6D6jFs0KKK_R0TJYn" \
             -o data.json \
             --fail \
             --silent \
             --show-error
-          python3 -c "import json; json.load(open('data.json'))" || { echo "ERROR: Fetched content is not valid JSON — aborting commit"; exit 1; }
+          python3 -c "import json; json.load(open('data.json'))" || { echo "ERROR: Not valid JSON"; exit 1; }
 
       - name: Commit and push if changed
         run: |
