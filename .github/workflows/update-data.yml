@@ -31,5 +31,5 @@ jobs:
           git reset --hard origin/main
           cp /tmp/data.json data.json
           git add data.json
-          git diff --staged --quiet || git commit -m "Dashboard update $(date -u '+%d/%m/%Y %H:%M')"
+          git commit -m "Dashboard update $(date -u '+%d/%m/%Y %H:%M')" --allow-empty
           git push
