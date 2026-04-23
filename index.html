@@ -310,26 +310,30 @@
     const grid = document.getElementById('orders-grid');
     grid.innerHTML = '';
     if(!rows || rows.length === 0) return false;
+    // Filter out completely empty rows
+    const validRows = rows.filter(function(r){
+      return r.customer && String(r.customer).trim() !== '';
+    });
+    if(!validRows || validRows.length === 0) return false;
     const groups = {};
     const customerOrder = [];
-    rows.forEach(function(r){
+    validRows.forEach(function(r){
       const c = r.customer || 'Other';
       if(!groups[c]){ groups[c] = []; customerOrder.push(c); }
       groups[c].push(r);
     });
     // Determine which columns have ANY data across all rows
-    const hasAnyType    = rows.some(function(r){ return r.type    && String(r.type).trim() !== ''; });
-    const hasAnyAccount = rows.some(function(r){ return r.account && String(r.account).trim() !== ''; });
-    const hasAnyOrderNo = rows.some(function(r){ return r.order_no && String(r.order_no).trim() !== ''; });
-    const hasAnyWip     = rows.some(function(r){ return r.wip     && String(r.wip).trim() !== ''; });
-    const hasAnyUntil   = rows.some(function(r){ return r.until   && String(r.until).trim() !== ''; });
+    const hasAnyType    = validRows.some(function(r){ return r.type    && String(r.type).trim() !== ''; });
+    const hasAnyAccount = validRows.some(function(r){ return r.account && String(r.account).trim() !== ''; });
+    const hasAnyOrderNo = validRows.some(function(r){ return r.order_no && String(r.order_no).trim() !== ''; });
+    const hasAnyWip     = validRows.some(function(r){ return r.wip     && String(r.wip).trim() !== ''; });
+    const hasAnyUntil   = validRows.some(function(r){ return r.until   && String(r.until).trim() !== ''; });
     const cols = [];
     if(hasAnyType)    cols.push({key:'type',     label:'Type'});
     if(hasAnyAccount) cols.push({key:'account',  label:'Account'});
     if(hasAnyOrderNo) cols.push({key:'order_no', label:'Order No.'});
     if(hasAnyWip)     cols.push({key:'wip',      label:'WIP'});
     if(hasAnyUntil)   cols.push({key:'until',    label:'Until'});
-    // Decide grid layout that fills the panel
     const n = customerOrder.length;
     let gCols, gRows;
     if(n === 1)      { gCols = 1; gRows = 1; }
