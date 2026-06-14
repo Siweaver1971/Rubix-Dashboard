@@ -2,7 +2,7 @@ name: Update Dashboard Data
 
 on:
   schedule:
-    - cron: '* * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -15,12 +15,20 @@ jobs:
 
       - name: Fetch data from Google Drive
         run: |
-          curl -L "https://drive.google.com/uc?export=download&id=1XF4p_2OrTKvNQEf6D6jFs0KKK_R0TJYn" \
-            -o data.json \
+          FILE_ID="1XF4p_2OrTKvNQEf6D6jFs0KKK_R0TJYn"
+          # Use usercontent.google.com which bypasses the virus-scan confirmation page
+          curl -L "https://drive.usercontent.google.com/download?id=${FILE_ID}&export=download&confirm=t" \
+            -o data_new.json \
             --fail \
             --silent \
             --show-error
-          python3 -c "import json; json.load(open('data.json'))" || { echo "ERROR: Not valid JSON"; exit 1; }
+          # Validate JSON - if invalid keep existing data.json and exit success
+          if python3 -c "import json; json.load(open('data_new.json'))" 2>/dev/null; then
+            mv data_new.json data.json
+          else
+            echo "WARNING: Downloaded content is not valid JSON - keeping existing data.json"
+            cat data_new.json | head -c 500
+          fi
 
       - name: Commit and push if changed
         run: |
