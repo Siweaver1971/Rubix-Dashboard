@@ -21,44 +21,28 @@ jobs:
             --fail \
             --silent \
             --show-error
-          # Fix JSON: sanitise message field to remove unescaped quotes and non-breaking spaces
-          python3 - <<'EOF'
-import json, re, sys
 
+      - name: Sanitise and validate JSON
+        run: |
+          python3 -c "
+import json, sys
 raw = open('data_new.json', 'r', encoding='utf-8').read()
-
+raw = raw.replace('\u00a0', ' ')
 try:
     data = json.loads(raw)
-except json.JSONDecodeError as e:
-    print(f"Raw JSON invalid: {e}")
-    # Try to fix common issues: non-breaking spaces (0xa0) and unescaped quotes in message
-    raw_fixed = raw.replace('\u00a0', ' ')  # Replace non-breaking spaces
-    try:
-        data = json.loads(raw_fixed)
-        print("Fixed by replacing non-breaking spaces")
-    except json.JSONDecodeError as e2:
-        print(f"Still invalid after fix: {e2}")
-        sys.exit(1)
-
-# Sanitise the message field specifically
+except Exception as e:
+    print('INVALID JSON:', e)
+    sys.exit(1)
 if 'message' in data and data['message']:
     msg = data['message']
-    # Replace non-breaking spaces with regular spaces
-    msg = msg.replace('\u00a0', ' ')
-    # Replace curly/smart quotes with straight equivalents
-    msg = msg.replace('\u201c', '"').replace('\u201d', '"')
-    msg = msg.replace('\u2018', "'").replace('\u2019', "'")
-    # Strip leading/trailing whitespace
-    msg = msg.strip()
+    msg = msg.replace('\u00a0', ' ').replace('\u201c', '\"').replace('\u201d', '\"')
+    msg = msg.replace('\u2018', \"'\").replace('\u2019', \"'\").strip()
     data['message'] = msg
-
 out = json.dumps(data, ensure_ascii=False)
-# Validate output is good JSON
 json.loads(out)
-open('data_new.json', 'w', encoding='utf-8').write(out)
-print("JSON sanitised and validated OK")
-EOF
-          mv data_new.json data.json
+open('data.json', 'w', encoding='utf-8').write(out)
+print('JSON OK')
+"
 
       - name: Commit and push if changed
         run: |
