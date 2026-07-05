@@ -471,12 +471,19 @@
     if(typeof v === 'string'){ try{ return JSON.parse(v); }catch(e){} }
     return [];
   }
-  function loadData(){
-    fetch('data.json?cb='+Date.now())
+  var gRefData = {};
+  function loadKPI(){
+    fetch('data_kpi.json?cb='+Date.now())
       .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-      .then(function(d){ renderData(d); })
+      .then(function(d){ renderData(Object.assign({}, gRefData, d)); })
       .catch(function(e){ console.error(e); renderError(); });
     nextAt = Date.now() + REFRESH_MS;
+  }
+  function loadRefData(){
+    fetch('data_ref.json?cb='+Date.now())
+      .then(function(r){ return r.json(); })
+      .then(function(d){ gRefData = d; loadKPI(); })
+      .catch(function(){ loadKPI(); });
   }
   function renderData(d){
     renderKPIs(d);
@@ -494,10 +501,10 @@
     document.getElementById('status-dot').className = 'status-dot stale';
     document.getElementById('status-text').textContent = 'Data unavailable \u2014 retrying next cycle';
   }
-  loadData();
-  setInterval(loadData, REFRESH_MS);
+  loadRefData();
+  setInterval(loadKPI, REFRESH_MS);
   window.addEventListener('resize', function(){
-    fetch('data.json?cb='+Date.now()).then(function(r){ return r.json(); }).then(renderData).catch(function(){});
+    fetch('data_kpi.json?cb='+Date.now()).then(function(r){ return r.json(); }).then(function(d){ renderData(Object.assign({}, gRefData, d)); }).catch(function(){});
   });
 </script>
 </body>
