@@ -271,7 +271,7 @@
     document.getElementById('kpi-received-sub').textContent = 'Awaiting assignment';
     document.getElementById('kpi-open-sub').textContent = openCount > 10 ? '\u26a0 Above threshold' : 'Within normal range';
     document.getElementById('kpi-resolved-sub').textContent = (parseInt(e.overdue)||0) > 0 ? '\u26a0 Past SLA' : 'All within SLA';
-    document.getElementById('kpi-rate').textContent = e.new_purchase_orders ?? '\u2014';
+    var nPO=(d.customer_orders||[]).filter(function(o){return o.wip&&o.wip.trim();}).length; document.getElementById('kpi-rate').textContent = nPO;
     document.getElementById('kpi-rate').style.color = 'var(--yellow)';
     const actual = parseFloat(s.actual_gbp) || 0;
     const target = parseFloat(s.target_gbp) || 0;
@@ -285,7 +285,7 @@
     const fill = document.getElementById('progress-fill');
     setTimeout(function(){ fill.style.width = Math.min(actPct, 100) + '%'; }, 100);
     if(actPct >= tgtPct) fill.classList.add('over'); else fill.classList.remove('over');
-    document.getElementById('kpi-message').textContent = d.message || '\u2014';
+    document.getElementById('kpi-message').textContent = d.message || '';
     document.getElementById('kpi-message').style.color = 'var(--white)';
     const upd = d.updated ? new Date(d.updated) : null;
     document.getElementById('last-updated').textContent = upd ? pad(upd.getHours()) + ':' + pad(upd.getMinutes()) + ' \u2014 ' + upd.toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '\u2014';
