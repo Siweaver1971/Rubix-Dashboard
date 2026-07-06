@@ -149,12 +149,16 @@
           <div>
             <div class="card-label" id="sales-period">Branch Sales &mdash; Loading...</div>
             <div class="sales-figures">
-              <div class="sales-block"><span class="s-label">Actual</span><span class="s-value s-actual" id="sales-actual">&mdash;</span></div>
-              <div class="sales-block"><span class="s-label">Target</span><span class="s-value s-target" id="sales-target">&mdash;</span></div>
+              <div class="sales-block"><span class="s-label">Sales Actual</span><span class="s-value s-actual" id="sales-actual">&mdash;</span></div>
+              <div class="sales-block"><span class="s-label">Sales Budget</span><span class="s-value s-target" id="sales-target">&mdash;</span></div>
+              <div style="width:1px;background:rgba(255,215,0,0.2);align-self:stretch;margin:0 10px;"></div>
+              <div class="sales-block"><span class="s-label">GP Actual</span><span class="s-value s-actual" id="sales-gp-actual">&mdash;</span></div>
+              <div class="sales-block"><span class="s-label">GP Budget</span><span class="s-value s-target" id="sales-gp-target">&mdash;</span></div>
+              <div class="sales-block" style="justify-content:flex-end;"><span class="s-label">GP Variance</span><span class="s-value" id="sales-gp-var" style="font-size:clamp(28px,3vw,48px)">&mdash;</span></div>
             </div>
           </div>
           <div class="progress-wrap">
-            <div class="progress-meta"><span>Progress to target</span><span id="sales-pct">&mdash;%</span></div>
+            <div class="progress-meta"><span>Sales progress to budget</span><span id="sales-pct">&mdash;%</span></div>
             <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
           </div>
         </div>
@@ -282,6 +286,14 @@
     document.getElementById('sales-actual').textContent = fmtGBP(actual);
     document.getElementById('sales-target').textContent = fmtGBP(target);
     document.getElementById('sales-pct').textContent = (Math.round(actPct*10)/10) + '%';
+    var gpAct = parseFloat(s.gp_actual_pct) || 0;
+    var gpTgt = parseFloat(s.gp_target_pct) || 0;
+    var gpVar = Math.round((gpAct - gpTgt) * 10) / 10;
+    document.getElementById('sales-gp-actual').textContent = gpAct.toFixed(1) + '%';
+    document.getElementById('sales-gp-target').textContent = gpTgt.toFixed(1) + '%';
+    var gpVarEl = document.getElementById('sales-gp-var');
+    gpVarEl.textContent = (gpVar >= 0 ? '+' : '') + gpVar.toFixed(1) + '%';
+    gpVarEl.style.color = gpVar >= 0 ? '#00C66A' : '#FD8374';
     const fill = document.getElementById('progress-fill');
     setTimeout(function(){ fill.style.width = Math.min(actPct, 100) + '%'; }, 100);
     if(actPct >= tgtPct) fill.classList.add('over'); else fill.classList.remove('over');
@@ -475,7 +487,12 @@
   function loadKPI(){
     fetch('data_kpi.json?cb='+Date.now())
       .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-      .then(function(d){ renderData(Object.assign({}, gRefData, d)); })
+      .then(function(d){
+        fetch('data_sales.json?cb='+Date.now())
+          .then(function(r2){ return r2.ok ? r2.json() : {}; })
+          .then(function(s){ if(s.sales) d.sales = s.sales; renderData(Object.assign({}, gRefData, d)); })
+          .catch(function(){ renderData(Object.assign({}, gRefData, d)); });
+      })
       .catch(function(e){ console.error(e); renderError(); });
     nextAt = Date.now() + REFRESH_MS;
   }
