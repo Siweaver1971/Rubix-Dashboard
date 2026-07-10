@@ -275,7 +275,7 @@
     document.getElementById('kpi-received-sub').textContent = 'Awaiting assignment';
     document.getElementById('kpi-open-sub').textContent = openCount > 10 ? '\u26a0 Above threshold' : 'Within normal range';
     document.getElementById('kpi-resolved-sub').textContent = (parseInt(e.overdue)||0) > 0 ? '\u26a0 Past SLA' : 'All within SLA';
-    var nPO=(d.customer_orders||[]).filter(function(o){return o.wip&&o.wip.trim();}).length; document.getElementById('kpi-rate').textContent = nPO;
+    document.getElementById('kpi-rate').textContent = e.purchase_orders ?? '—';
     document.getElementById('kpi-rate').style.color = 'var(--yellow)';
     const actual = parseFloat(s.actual_gbp) || 0;
     const target = parseFloat(s.target_gbp) || 0;
